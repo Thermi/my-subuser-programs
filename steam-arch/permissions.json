@@ -1,0 +1,15 @@
+{
+	"description" : "Steam built on top of Arch Linux",
+	"maintainer"  : "Noel Kuntze <noel@familie-kuntze.de>",
+	"executable"  : "/usr/bin/steam",
+
+	"basic-common-permissions" : true,
+	"gui" : { "clipboard" : true, "cursors" : true, "system-tray" : true },
+	"user-dirs" : [".steam"],
+	"inherit-envvars" : ["LOGNAME", "XDG_SEAT", "HOME", "LANG"],
+	"sound-card" : true,
+	"webcam" : true,
+	"allow-network-access" : true,
+	"graphics-card" : true,
+	"system-dbus" : true
+}

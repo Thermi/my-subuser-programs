@@ -1,0 +1,44 @@
+#!/bin/bash
+
+#
+# Make errors visible upon `docker logs -f steam` command
+#
+exec 2>&1
+
+service dnsmasq start
+
+#
+# Befriend with grsecurity patched Linux kernel
+#
+# TODO: find a way how to set these attributes dynamically,
+#       since this currently requires a Steam restart
+#       when new content is obtained.
+if [ -f /proc/sys/kernel/grsecurity/tpe_gid ]; then
+  groupadd -r -g $(cat /proc/sys/kernel/grsecurity/tpe_gid) grsec-tpe
+  usermod -aG grsec-tpe $USER
+  setfattr -n user.pax.flags -v "m" \
+            /lib/i386-linux-gnu/ld-2.19.so \
+            $HOME/.local/share/Steam/ubuntu12_32/steam \
+            $HOME/.local/share/Steam/ubuntu12_32/steamwebhelper \
+            $HOME/.local/share/Steam/ubuntu12_32/gameoverlayui \
+            $HOME/.local/share/Steam/steamapps/common/Half-Life/hl_linux \
+            $HOME/.local/share/Steam/steamapps/common/Counter-Strike\ Global\ Offensive\csgo_linux64
+  # paxctl -c -v -m /lib/i386-linux-gnu/ld-2.19.so
+fi
+
+#
+# Add a user to a detected "video" group
+# so that it can access the nvidia devices
+#
+if [ -e /dev/nvidiactl ]; then
+  GID=$(stat -c '%g' /dev/nvidiactl)
+  groupadd -r -g $GID nvidia1
+  if [ $? -eq 0 ]; then
+    usermod -aG nvidia1 $USER
+  else
+    GROUP=$(stat -c '%G' /dev/nvidiactl)
+    usermod -aG $GROUP $USER
+  fi
+fi
+
+su -p user -c "steam $@"
