@@ -18,7 +18,7 @@ RUN cat /etc/resolv.conf
 RUN sed -i '/#\[multilib\]/,/#Include = \/etc\/pacman.d\/mirrorlist/ s/#//' /etc/pacman.conf && \
     dirmngr </dev/null > /dev/null 2>&1 && \
     sed -i "s/#Color/Color/" /etc/pacman.conf && \
-    pacman --noconfirm -S steam && \
+    pacman --noconfirm -Sy steam && \
     rm -rf /usr/share/info/* && \
     rm -rf /usr/share/man/* && \
     rm -rf /usr/share/doc/*
